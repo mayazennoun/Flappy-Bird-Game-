@@ -6,16 +6,14 @@ pygame.init()
 clock = pygame.time.Clock()
 fps = 50
 
-# Définir une fenêtre de taille moyenne
+# Fenêtre du jeu
 screen_width = 600  
 screen_height = 700  
-
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Flappy Bird")
 
-#define font
+# Font et couleurs
 font = pygame.font.SysFont('Bauhaus 93', 60)
-#define color
 white = (255, 255, 255)
 
 # Variables
@@ -24,22 +22,19 @@ scroll_speed = 4
 flying = False 
 game_over = False
 pipe_gap = 200
-pipe_frequency = 1500  # Milliseconds
+pipe_frequency = 1500  
 last_pipe = pygame.time.get_ticks() - pipe_frequency
 score = 0
-pass_pipe = False
 
-# Charger et redimensionner les images
+# Charger les images
 bg = pygame.image.load('images/bg.png')
 bg = pygame.transform.scale(bg, (screen_width, screen_height))
-
 ground_img = pygame.image.load('images/ground.png')
 button_img = pygame.image.load('images/restart.png')
 
 ground_height = int(screen_height * 0.2)  
 ground_img = pygame.transform.scale(ground_img, (screen_width, ground_height))
 ground_width = ground_img.get_width()  
-
 ground_y = screen_height - ground_height
 
 def draw_text(text, font, text_col, x, y):
@@ -47,15 +42,14 @@ def draw_text(text, font, text_col, x, y):
     screen.blit(img, (x, y))
 
 def reset_game():
-    global score, pass_pipe, flying
+    global score, flying
     pipe_group.empty()
     flappy.rect.x = 100
     flappy.rect.y = int(screen_height / 2)
-    flappy.vel = 0  # Réinitialiser la vitesse
-    flappy.image = flappy.images[0]  # Réinitialiser l'orientation de l'image
+    flappy.vel = 0  
+    flappy.image = flappy.images[0]  
     score = 0
-    pass_pipe = False
-    flying = False  # Remettre l'état de vol à False
+    flying = False  
     return score
 
 class Bird(pygame.sprite.Sprite):
@@ -109,6 +103,7 @@ class Pipe(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('images/pipe.png')
         self.rect = self.image.get_rect()
+        self.passed = False  
         if position == 1:
             self.image = pygame.transform.flip(self.image, False, True)
             self.rect.bottomleft = [x, y - int(pipe_gap / 2)]
@@ -118,8 +113,8 @@ class Pipe(pygame.sprite.Sprite):
     def update(self):
         if not game_over:
             self.rect.x -= scroll_speed
-        if self.rect.right < 0:
-            self.kill()
+            if self.rect.right < 0:
+                self.kill()  
 
 class Button():
     def __init__(self, x, y, image):
@@ -166,7 +161,7 @@ while run:
         game_over = True
         flying = False
         flappy.rect.bottom = ground_y  
-    
+
     if not game_over and flying:
         time_now = pygame.time.get_ticks()
         if time_now - last_pipe > pipe_frequency:
@@ -180,9 +175,15 @@ while run:
         ground_scroll -= scroll_speed
         if abs(ground_scroll) > ground_width:
             ground_scroll = 0  
-    
+
+    if not game_over:
+        for pipe in pipe_group:
+            if pipe.rect.right < flappy.rect.left and not pipe.passed and pipe.rect.bottom > screen_height // 2:
+                pipe.passed = True
+                score += 1  # Augmenter le score uniquement pour les tuyaux du bas
+
     if game_over:
-        if button.draw() == True:
+        if button.draw():
             game_over = False
             score = reset_game()
     
@@ -195,6 +196,13 @@ while run:
     pygame.display.update()
 
 pygame.quit()
+
+
+
+
+
+
+
 
 
 
