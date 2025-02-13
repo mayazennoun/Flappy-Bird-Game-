@@ -6,17 +6,17 @@ pygame.init()
 clock = pygame.time.Clock()
 fps = 50
 
-# Fenêtre du jeu
+
 screen_width = 600  
 screen_height = 700  
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Flappy Bird")
 
-# Font et couleurs
+
 font = pygame.font.SysFont('Bauhaus 93', 60)
 white = (255, 255, 255)
 
-# Variables
+
 ground_scroll = 0
 scroll_speed = 4
 flying = False 
@@ -26,7 +26,7 @@ pipe_frequency = 1500
 last_pipe = pygame.time.get_ticks() - pipe_frequency
 score = 0
 
-# Charger les images
+
 bg = pygame.image.load('images/bg.png')
 bg = pygame.transform.scale(bg, (screen_width, screen_height))
 ground_img = pygame.image.load('images/ground.png')
@@ -180,7 +180,7 @@ while run:
         for pipe in pipe_group:
             if pipe.rect.right < flappy.rect.left and not pipe.passed and pipe.rect.bottom > screen_height // 2:
                 pipe.passed = True
-                score += 1  # Augmenter le score uniquement pour les tuyaux du bas
+                score += 1  
 
     if game_over:
         if button.draw():
